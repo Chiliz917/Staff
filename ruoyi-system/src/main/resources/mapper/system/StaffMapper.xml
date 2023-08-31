@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StaffMapper">
+    
+    <resultMap type="Staff" id="StaffResult">
+        <result property="id"    column="id"    />
+        <result property="empName"    column="emp_name"    />
+        <result property="sex"    column="sex"    />
+        <result property="age"    column="age"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="empDegreeName"    column="emp_degree_name"    />
+    </resultMap>
+
+    <sql id="selectStaffVo">
+        select id, emp_name, sex, age, dept_name, emp_degree_name from staff
+    </sql>
+
+    <select id="selectStaffList" parameterType="Staff" resultMap="StaffResult">
+        <include refid="selectStaffVo"/>
+        <where>  
+            <if test="empName != null  and empName != ''"> and emp_name like concat('%', #{empName}, '%')</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="age != null "> and age = #{age}</if>
+            <if test="deptName != null  and deptName != ''"> and dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="empDegreeName != null  and empDegreeName != ''"> and emp_degree_name like concat('%', #{empDegreeName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectStaffById" parameterType="Long" resultMap="StaffResult">
+        <include refid="selectStaffVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertStaff" parameterType="Staff" useGeneratedKeys="true" keyProperty="id">
+        insert into staff
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="empName != null">emp_name,</if>
+            <if test="sex != null">sex,</if>
+            <if test="age != null">age,</if>
+            <if test="deptName != null">dept_name,</if>
+            <if test="empDegreeName != null">emp_degree_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="empName != null">#{empName},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="age != null">#{age},</if>
+            <if test="deptName != null">#{deptName},</if>
+            <if test="empDegreeName != null">#{empDegreeName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStaff" parameterType="Staff">
+        update staff
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="empName != null">emp_name = #{empName},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="empDegreeName != null">emp_degree_name = #{empDegreeName},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStaffById" parameterType="Long">
+        delete from staff where id = #{id}
+    </delete>
+
+    <delete id="deleteStaffByIds" parameterType="String">
+        delete from staff where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
